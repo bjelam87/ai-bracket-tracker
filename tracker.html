@@ -863,14 +863,20 @@ function render() {
             }
           }
         } else {
+          let feedA=null, feedB=null;
+          const rr=RESULTS[region];
+          if(round==="R2"){ feedA=rr.R1[i*2]; feedB=rr.R1[i*2+1]; }
+          else if(round==="S16"){ feedA=rr.R2[i*2]; feedB=rr.R2[i*2+1]; }
+          else if(round==="E8"){ feedA=rr.S16[0]; feedB=rr.S16[1]; }
           if(result){
-            label=`<span class="winner">${teamWithSeed(result)}</span> advances`;
+            if(feedA && feedB){
+              const loser=eq(result,feedA)?feedB:feedA;
+              label=`${logoTag(feedA)}${eq(result,feedA)?`<span class="winner">${teamWithSeed(feedA)}</span>`:teamWithSeed(feedA)} vs ${logoTag(feedB)}${eq(result,feedB)?`<span class="winner">${teamWithSeed(feedB)}</span>`:teamWithSeed(feedB)}`;
+              const gs=getGameScore(feedA,feedB);if(gs)scoreLabel=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
+            } else {
+              label=`<span class="winner">${teamWithSeed(result)}</span> advances`;
+            }
           } else {
-            let feedA=null, feedB=null;
-            const rr=RESULTS[region];
-            if(round==="R2"){ feedA=rr.R1[i*2]; feedB=rr.R1[i*2+1]; }
-            else if(round==="S16"){ feedA=rr.R2[i*2]; feedB=rr.R2[i*2+1]; }
-            else if(round==="E8"){ feedA=rr.S16[0]; feedB=rr.S16[1]; }
             if(feedA || feedB) label=`${teamWithSeedOrTBD(feedA)} vs ${teamWithSeedOrTBD(feedB)}`;
             else label=`Game ${i+1} — awaiting`;
           }
@@ -926,22 +932,31 @@ function render() {
   const ffFeeders=[[RESULTS.East.E8[0],RESULTS.South.E8[0]],[RESULTS.West.E8[0],RESULTS.Midwest.E8[0]]];
   ["East vs South","West vs Midwest"].forEach((lbl,i)=>{
     const r=RESULTS.FF[i],done=r!==null;
-    let ffLabel=lbl;
-    if(done) ffLabel=`<span class="winner">${teamWithSeed(r)}</span>`;
-    else { const a=ffFeeders[i][0],b=ffFeeders[i][1]; if(a||b)ffLabel=`${teamWithSeedOrTBD(a)} vs ${teamWithSeedOrTBD(b)}`; }
+    let ffLabel=lbl, ffScore='';
+    const fA=ffFeeders[i][0],fB=ffFeeders[i][1];
+    if(done && fA && fB) {
+      ffLabel=`${logoTag(fA)}${eq(r,fA)?`<span class="winner">${teamWithSeed(fA)}</span>`:teamWithSeed(fA)} vs ${logoTag(fB)}${eq(r,fB)?`<span class="winner">${teamWithSeed(fB)}</span>`:teamWithSeed(fB)}`;
+      const gs=getGameScore(fA,fB);if(gs)ffScore=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
+    } else if(done) { ffLabel=`<span class="winner">${teamWithSeed(r)}</span>`; }
+    else { if(fA||fB)ffLabel=`${teamWithSeedOrTBD(fA)} vs ${teamWithSeedOrTBD(fB)}`; }
     const picks=agentNames.map(n=>{const p=AGENTS[n].picks.FF[i];const st=!done?"pending":eq(p,r)?"correct":"wrong";
       return`<td><div class="pick-indicator ${pickClass(st,p,elim)}" title="${n}: ${p}">${pickContent(st,p,elim)}</div></td>`;}).join("");
     g+=`<div class="game-row ${done?'completed':'pending-game'}" style="${colGrid}">
-      <div class="game-round-label rd-ff">FF</div><div class="game-matchup">${ffLabel}</div><div class="game-score"></div><div class="game-status"></div><div></div>${picks}</div>`;
+      <div class="game-round-label rd-ff">FF</div><div class="game-matchup">${ffLabel}</div><div class="game-score">${ffScore}</div><div class="game-status">${done?'<span class="status-final">Final</span>':''}</div><div></div>${picks}</div>`;
   });
   {const r=RESULTS.Championship,done=r!==null;
   let champLabel='Championship Game';
-  if(done) champLabel=`<span class="winner">${teamWithSeed(r)}</span> WINS IT ALL`;
-  else { const a=RESULTS.FF[0],b=RESULTS.FF[1]; if(a||b)champLabel=`${teamWithSeedOrTBD(a)} vs ${teamWithSeedOrTBD(b)}`; }
+  const cA=RESULTS.FF[0],cB=RESULTS.FF[1];
+  let champScore='';
+  if(done && cA && cB) {
+    champLabel=`${logoTag(cA)}${eq(r,cA)?`<span class="winner">${teamWithSeed(cA)}</span>`:teamWithSeed(cA)} vs ${logoTag(cB)}${eq(r,cB)?`<span class="winner">${teamWithSeed(cB)}</span>`:teamWithSeed(cB)} 🏆`;
+    const gs=getGameScore(cA,cB);if(gs)champScore=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
+  } else if(done) { champLabel=`<span class="winner">${teamWithSeed(r)}</span> WINS IT ALL`; }
+  else { if(cA||cB)champLabel=`${teamWithSeedOrTBD(cA)} vs ${teamWithSeedOrTBD(cB)}`; }
   const picks=agentNames.map(n=>{const p=AGENTS[n].picks.Championship;const st=!done?"pending":eq(p,r)?"correct":"wrong";
     return`<td><div class="pick-indicator ${pickClass(st,p,elim)}" title="${n}: ${p}">${pickContent(st,p,elim)}</div></td>`;}).join("");
   g+=`<div class="game-row ${done?'completed':'pending-game'}" style="${colGrid}">
-    <div class="game-round-label rd-champ">🏆</div><div class="game-matchup">${champLabel}</div><div class="game-score"></div><div class="game-status"></div><div></div>${picks}</div>`;}
+    <div class="game-round-label rd-champ">🏆</div><div class="game-matchup">${champLabel}</div><div class="game-score">${champScore}</div><div class="game-status">${done?'<span class="status-final">Final</span>':''}</div><div></div>${picks}</div>`;}
   g+=`</div></div>`;
   document.getElementById("gamesDetail").innerHTML=g;
   const hpBtn=document.getElementById("hidePendingBtn");
