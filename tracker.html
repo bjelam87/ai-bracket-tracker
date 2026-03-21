@@ -888,7 +888,7 @@ function render() {
             const isScheduled=meta.status==='STATUS_SCHEDULED';
             if(isLive){
               statusLabel=`<span class="status-live">● ${meta.shortDetail}</span>${meta.broadcast?`<span class="status-tv">📺 ${meta.broadcast}</span>`:''}`;
-              if(meta.topScore||meta.botScore) scoreLabel=`<span class="status-live">${meta.topScore}-${meta.botScore}</span>`;
+              if((meta.topScore||meta.botScore) && feedA){const aS=eq(meta.topName,feedA)?meta.topScore:meta.botScore;const bS=eq(meta.topName,feedA)?meta.botScore:meta.topScore;scoreLabel=`<span class="status-live">${aS}-${bS}</span>`;} else if(meta.topScore||meta.botScore){scoreLabel=`<span class="status-live">${meta.topScore}-${meta.botScore}</span>`;}
               rowClass='live-game';
             } else if(isScheduled && !done){
               const d=new Date(meta.startDate);
