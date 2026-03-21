@@ -871,7 +871,7 @@ function render() {
           if(result){
             if(feedA && feedB){
               const loser=eq(result,feedA)?feedB:feedA;
-              label=`${logoTag(feedA)}${eq(result,feedA)?`<span class="winner">${teamWithSeed(feedA)}</span>`:teamWithSeed(feedA)} vs ${logoTag(feedB)}${eq(result,feedB)?`<span class="winner">${teamWithSeed(feedB)}</span>`:teamWithSeed(feedB)}`;
+              label=`${eq(result,feedA)?`<span class="winner">${teamWithSeed(feedA)}</span>`:teamWithSeed(feedA)} vs ${eq(result,feedB)?`<span class="winner">${teamWithSeed(feedB)}</span>`:teamWithSeed(feedB)}`;
               const gs=getGameScore(feedA,feedB);if(gs)scoreLabel=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
             } else {
               label=`<span class="winner">${teamWithSeed(result)}</span> advances`;
@@ -935,7 +935,7 @@ function render() {
     let ffLabel=lbl, ffScore='';
     const fA=ffFeeders[i][0],fB=ffFeeders[i][1];
     if(done && fA && fB) {
-      ffLabel=`${logoTag(fA)}${eq(r,fA)?`<span class="winner">${teamWithSeed(fA)}</span>`:teamWithSeed(fA)} vs ${logoTag(fB)}${eq(r,fB)?`<span class="winner">${teamWithSeed(fB)}</span>`:teamWithSeed(fB)}`;
+      ffLabel=`${eq(r,fA)?`<span class="winner">${teamWithSeed(fA)}</span>`:teamWithSeed(fA)} vs ${eq(r,fB)?`<span class="winner">${teamWithSeed(fB)}</span>`:teamWithSeed(fB)}`;
       const gs=getGameScore(fA,fB);if(gs)ffScore=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
     } else if(done) { ffLabel=`<span class="winner">${teamWithSeed(r)}</span>`; }
     else { if(fA||fB)ffLabel=`${teamWithSeedOrTBD(fA)} vs ${teamWithSeedOrTBD(fB)}`; }
@@ -949,7 +949,7 @@ function render() {
   const cA=RESULTS.FF[0],cB=RESULTS.FF[1];
   let champScore='';
   if(done && cA && cB) {
-    champLabel=`${logoTag(cA)}${eq(r,cA)?`<span class="winner">${teamWithSeed(cA)}</span>`:teamWithSeed(cA)} vs ${logoTag(cB)}${eq(r,cB)?`<span class="winner">${teamWithSeed(cB)}</span>`:teamWithSeed(cB)} 🏆`;
+    champLabel=`${eq(r,cA)?`<span class="winner">${teamWithSeed(cA)}</span>`:teamWithSeed(cA)} vs ${eq(r,cB)?`<span class="winner">${teamWithSeed(cB)}</span>`:teamWithSeed(cB)} 🏆`;
     const gs=getGameScore(cA,cB);if(gs)champScore=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
   } else if(done) { champLabel=`<span class="winner">${teamWithSeed(r)}</span> WINS IT ALL`; }
   else { if(cA||cB)champLabel=`${teamWithSeedOrTBD(cA)} vs ${teamWithSeedOrTBD(cB)}`; }
