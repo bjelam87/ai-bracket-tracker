@@ -835,7 +835,7 @@ function render() {
         if(round==="R1"){
           const m=MATCHUPS[region].R1[i];
           label=`${logoTag(m.top)}<span class="seed">(${m.topSeed})</span> ${done&&eq(result,m.top)?`<span class="winner">${m.top}</span>`:m.top} vs ${logoTag(m.bot)}<span class="seed">(${m.botSeed})</span> ${done&&eq(result,m.bot)?`<span class="winner">${m.bot}</span>`:m.bot}`;
-          if(done){const gs=getGameScore(m.top,m.bot);if(gs)scoreLabel=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;}
+          if(done){const gs=getGameScore(m.top,m.bot);if(gs){const tIsW=eq(gs.winner,m.top);const tS=tIsW?gs.winScore:gs.loseScore;const bS=tIsW?gs.loseScore:gs.winScore;scoreLabel=tIsW?`<span class="score-winner">${tS}</span>-${bS}`:`${tS}-<span class="score-winner">${bS}</span>`;}}
           const mk=`${region}_${round}_${i}`;
           const meta=GAME_META[mk];
           if(meta){
@@ -872,7 +872,7 @@ function render() {
             if(feedA && feedB){
               const loser=eq(result,feedA)?feedB:feedA;
               label=`${eq(result,feedA)?`<span class="winner">${teamWithSeed(feedA)}</span>`:teamWithSeed(feedA)} vs ${eq(result,feedB)?`<span class="winner">${teamWithSeed(feedB)}</span>`:teamWithSeed(feedB)}`;
-              const gs=getGameScore(feedA,feedB);if(gs)scoreLabel=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
+              const gs=getGameScore(feedA,feedB);if(gs){const aIsW=eq(gs.winner,feedA);const aScore=aIsW?gs.winScore:gs.loseScore;const bScore=aIsW?gs.loseScore:gs.winScore;scoreLabel=aIsW?`<span class="score-winner">${aScore}</span>-${bScore}`:`${aScore}-<span class="score-winner">${bScore}</span>`;}
             } else {
               label=`<span class="winner">${teamWithSeed(result)}</span> advances`;
             }
@@ -936,7 +936,7 @@ function render() {
     const fA=ffFeeders[i][0],fB=ffFeeders[i][1];
     if(done && fA && fB) {
       ffLabel=`${eq(r,fA)?`<span class="winner">${teamWithSeed(fA)}</span>`:teamWithSeed(fA)} vs ${eq(r,fB)?`<span class="winner">${teamWithSeed(fB)}</span>`:teamWithSeed(fB)}`;
-      const gs=getGameScore(fA,fB);if(gs)ffScore=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
+      const gs=getGameScore(fA,fB);if(gs){const aIsW=eq(gs.winner,fA);const aS=aIsW?gs.winScore:gs.loseScore;const bS=aIsW?gs.loseScore:gs.winScore;ffScore=aIsW?`<span class="score-winner">${aS}</span>-${bS}`:`${aS}-<span class="score-winner">${bS}</span>`;}
     } else if(done) { ffLabel=`<span class="winner">${teamWithSeed(r)}</span>`; }
     else { if(fA||fB)ffLabel=`${teamWithSeedOrTBD(fA)} vs ${teamWithSeedOrTBD(fB)}`; }
     const picks=agentNames.map(n=>{const p=AGENTS[n].picks.FF[i];const st=!done?"pending":eq(p,r)?"correct":"wrong";
@@ -950,7 +950,7 @@ function render() {
   let champScore='';
   if(done && cA && cB) {
     champLabel=`${eq(r,cA)?`<span class="winner">${teamWithSeed(cA)}</span>`:teamWithSeed(cA)} vs ${eq(r,cB)?`<span class="winner">${teamWithSeed(cB)}</span>`:teamWithSeed(cB)} 🏆`;
-    const gs=getGameScore(cA,cB);if(gs)champScore=`<span class="score-winner">${gs.winScore}</span>-${gs.loseScore}`;
+    const gs=getGameScore(cA,cB);if(gs){const aIsW=eq(gs.winner,cA);const aS=aIsW?gs.winScore:gs.loseScore;const bS=aIsW?gs.loseScore:gs.winScore;champScore=aIsW?`<span class="score-winner">${aS}</span>-${bS}`:`${aS}-<span class="score-winner">${bS}</span>`;}
   } else if(done) { champLabel=`<span class="winner">${teamWithSeed(r)}</span> WINS IT ALL`; }
   else { if(cA||cB)champLabel=`${teamWithSeedOrTBD(cA)} vs ${teamWithSeedOrTBD(cB)}`; }
   const picks=agentNames.map(n=>{const p=AGENTS[n].picks.Championship;const st=!done?"pending":eq(p,r)?"correct":"wrong";
