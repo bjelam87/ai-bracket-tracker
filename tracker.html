@@ -902,6 +902,8 @@ function render() {
               const datePrefix=isToday?'Today':isTomorrow?'Tomorrow':d.toLocaleDateString([],{month:'short',day:'numeric'});
               statusLabel=`<span class="status-time">${datePrefix}, ${timeStr}</span>${meta.broadcast?`<span class="status-tv">📺 ${meta.broadcast}</span>`:''}`;
             }
+          } else if(done){
+            statusLabel=`<span class="status-final">Final</span>`;
           }
         }
         const picks=agentNames.map(n=>{const pick=AGENTS[n].picks[region][round][i];const st=!done?"pending":eq(pick,result)?"correct":"wrong";
